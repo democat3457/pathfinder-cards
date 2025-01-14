@@ -38,7 +38,7 @@ export default function renderEnrichedText(text: string, cardWidth?: number) {
 			}
 			const icon = createActionIcon(word, 10, index)
 			if (icon) return icon
-			let element = word
+			let element: JSX.Element | string = word
 			if (bolded) element = <b>{element}</b>
 			if (italicized) element = <i>{element}</i>
 			return (
