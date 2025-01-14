@@ -3,6 +3,8 @@ import { Hr, Paragraph } from '@/styles/commonStyledComponents'
 import { actionIcons, createActionIcon } from './createActionIcon'
 
 export default function renderEnrichedText(text: string, cardWidth?: number) {
+	const boldRegex = /^\*\*(.+)\*\*$/
+	const italicRegex = /^\*(.+)\*$/
 	const emphasizeWords = (paragraph: string) => {
 		const words = paragraph.split(' ')
 		const actionIndex = words.findIndex((word) =>
@@ -10,7 +12,7 @@ export default function renderEnrichedText(text: string, cardWidth?: number) {
 		)
 
 		return words.map((word, index) => {
-			const shouldBeEmphesized = (
+			let bolded = (
 				index < actionIndex ||
 				keywords.includes(word) || (
 					// Numeric keywords should only be emphesized when used
@@ -25,13 +27,22 @@ export default function renderEnrichedText(text: string, cardWidth?: number) {
 					!isNaN(Number(words[index + 1]))
 				)
 			)
+			let italicized = false;
+			if (boldRegex.test(word)) {
+				bolded = true
+				word = word.replace(boldRegex, '$1')
+			}
+			if (italicRegex.test(word)) {
+				italicized = true
+				word = word.replace(italicRegex, '$1')
+			}
 			const icon = createActionIcon(word, 10, index)
-			return icon ? (
-				icon
-			) : shouldBeEmphesized ? (
-				<b key={index}>{word} </b>
-			) : (
-				<span key={index}>{word} </span>
+			if (icon) return icon
+			let element = word
+			if (bolded) element = <b>{element}</b>
+			if (italicized) element = <i>{element}</i>
+			return (
+				<span key={index}>{element} </span>
 			)
 		})
 	}
